@@ -1,8 +1,8 @@
-IF OBJECT_ID('dbo.daily_partner_sales_base_query') is NOT NULL
-	DROP VIEW dbo.daily_partner_sales_base_query;
+IF OBJECT_ID('dbo.v_daily_partner_sales_base') is NOT NULL
+	DROP VIEW dbo.v_daily_partner_sales_base;
 GO
 
-CREATE VIEW dbo.daily_partner_sales_base_query AS
+CREATE VIEW dbo.v_daily_partner_sales_base AS
 
 	SELECT	DISTINCT
 			getdate() as Report_Run_Date,
