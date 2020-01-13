@@ -1,0 +1,13 @@
+IF OBJECT_ID('dbo.v_hold') is NOT NULL
+	DROP VIEW dbo.v_hold;
+GO
+
+CREATE VIEW dbo.v_hold AS
+
+  SELECT  TOP 10000
+		  *
+
+  FROM	  dbo.v_hold_base
+
+  ORDER BY SERVICESTARTDATE, PNRLOCATORID, SEGMENTNBR
+GO
