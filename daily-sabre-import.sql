@@ -33,7 +33,7 @@ IF( 1 <> (SELECT ISNUMERIC(@import_date)) OR 8 <> (SELECT LEN(@import_date)))
   -- AMMENDS Existing data in table
   EXEC ImportRes @import_date, @import_file_path
   EXEC ImportResPassenger @import_date, @import_file_path
-  -- EXEC ImportResRemarks @import_date, @import_file_path
+  EXEC ImportResRemark @import_date, @import_file_path
   EXEC ImportResSSR @import_date, @import_file_path
 
   EXEC ImportTktCoupon @import_date, @import_file_path
