@@ -1,105 +1,52 @@
-CREATE PROCEDURE dbo.DailySabreImport @import_date = null
+if OBJECT_ID('DailySabreImport', 'P') is not null
+  BEGIN
+    print 'Dropping procedure DailySabreImport'
+	  drop procedure DailySabreImport
+  END
+GO
 
-if( @import_date is null)
-  set @import_date = cast(getdate() as date)
+CREATE PROCEDURE dbo.DailySabreImport @import_date varchar(25) = null AS
+BEGIN
 
+  if (@import_date is null)
+    set @import_date = convert(varchar, getdate(), 112)
+  else
+    set @import_date = (select replace(@import_date, '-', ''))
 
-DECLARE @import_file_path NVARCHAR(512) = 'E:\Sabre_files\PROD\TDB Samplefiles.sabre\',
-        @file_name NVARCHAR(512) = 'ACSFlight.xlsx',
-		@full_file_name NVARCHAR(1024)
-
-SET @full_file_name = @import_file_path + @file_name
-
- Append Data to tables
-
- ACSFlight
-
-Declare @ACSFlight table(
-  SourceSystemID NVARCHAR(1000),
-  AirlineCode NVARCHAR(1000),
-  FltNbr NVARCHAR(1000),
-  ServiceStartDate NVARCHAR(1000),
-  AirlineOrigAirport NVARCHAR(1000),
-  AirlineDestAirport NVARCHAR(1000),
-  SchdAirlineOrigAirport NVARCHAR(1000),
-  SchdAirlineDestAirport NVARCHAR(1000),
-  AirlineOrigGate NVARCHAR(1000),
-  COGInd NVARCHAR(1000),
-  FltOverFlyInd NVARCHAR(1000),
-  FltFlagStopInd NVARCHAR(1000),
-  FltStubInd NVARCHAR(1000),
-  GateReaderLNIATA NVARCHAR(1000),
-  EstServiceEndDate NVARCHAR(1000),
-  EstServiceEndTime NVARCHAR(1000),
-  EstServiceStartDate NVARCHAR(1000),
-  EstServiceStartTime NVARCHAR(1000),
-  SchdServiceStartDate NVARCHAR(1000),
-  SchdServiceStartTime NVARCHAR(1000),
-  SchdServiceEndDate NVARCHAR(1000),
-  SchdServiceEndTime NVARCHAR(1000),
-  FltCloseDate NVARCHAR(1000),
-  FltCloseTime NVARCHAR(1000),
-  PDCDate NVARCHAR(1000),
-  PDCTime NVARCHAR(1000),
-  FltLegDelayedInd NVARCHAR(1000),
-  FltLegStatus NVARCHAR(1000),
-  TailNbr NVARCHAR(1000),
-  MsgCreateDateTime NVARCHAR(1000),
-  EquipmentType NVARCHAR(1000),
-  AircraftConfig NVARCHAR(1000),
-  TotalPaxCoun NVARCHAR(1000)
-)
+-- Tries to ensure that the import date will match a file name if the script is
+-- manually ran
+IF( 1 <> (SELECT ISNUMERIC(@import_date)) OR 8 <> (SELECT LEN(@import_date)))
+  BEGIN
+    RAISERROR('Invalid date format. Import date must be specified as yyyy-mm-dd', 16, 1)
+    return
+  END
 
 
-BULK INSERT [@ACSFlight] FROM [@import_file_path + @file_name]
-  WITH(
-    DATAFILETYPE = 'char',
-    FIELDTERMINATOR = '|',
-    ROWTERMINATOR = '\n'
-  );
+  DECLARE @import_file_path NVARCHAR(512) = 'E:\company_data\Sabre\Files\travelbatch'
+
+  -- APPENDS DATA To existing table
+
+  EXEC ImportACSFlight @import_date, @import_file_path
+  EXEC ImportACSPaxVCR @import_date, @import_file_path
+  EXEC ImportACSPaxFlight @import_date, @import_file_path
+
+  -- AMMENDS Existing data in table
+  EXEC ImportRes @import_date, @import_file_path
+  EXEC ImportResPassenger @import_date, @import_file_path
+  -- EXEC ImportResRemarks @import_date, @import_file_path
+  EXEC ImportResSSR @import_date, @import_file_path
+
+  EXEC ImportTktCoupon @import_date, @import_file_path
+  EXEC ImportTktCouponHistory @import_date, @import_file_path
+  EXEC ImportTktDocument @import_date, @import_file_path
+  EXEC ImportTktFees @import_date, @import_file_path
+  EXEC ImportTktTax @import_date, @import_file_path
 
 
-select * from temp_ACSFlight
+END;
+GO
 
-insert  dbo.ACSFlight(
-        SourceSystemID,
-        AirlineCode,
-        FltNbr,
-        ServiceStartDate,
-        AirlineOrigAirport,
-        AirlineDestAirport,
-        SchdAirlineOrigAirport,
-        SchdAirlineDestAirport,
-        AirlineOrigGate,
-        COGInd,
-        FltOverFlyInd,
-        FltFlagStopInd,
-        FltStubInd,
-        GateReaderLNIATA,
-        EstServiceEndDate,
-        EstServiceEndTime,
-        EstServiceStartDate,
-        EstServiceStartTime,
-        SchdServiceStartDate,
-        SchdServiceStartTime,
-        SchdServiceEndDate,
-        SchdServiceEndTime,
-        FltCloseDate,
-        FltCloseTime,
-        PDCDate,
-        PDCTime,
-        FltLegDelayedInd,
-        FltLegStatus,
-        TailNbr,
-        MsgCreateDateTime,
-        EquipmentType,
-        AircraftConfig,
-        TotalPaxCount
-)
+-- EXEC DailySabreImport
 
-select  * from @ACSFlight
-
-
--- Update Existing data in tables
 
 
