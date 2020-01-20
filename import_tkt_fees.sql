@@ -50,7 +50,7 @@ BEGIN
     'WITH(
       DATAFILETYPE = ''char'',
       FIELDTERMINATOR = ''|'',
-      ROWTERMINATOR = ''\n''
+      ROWTERMINATOR = ''0x0a''
     )'
 
     PRINT 'Bulk inserting data from ' + @full_file_name + ' into temp table'
