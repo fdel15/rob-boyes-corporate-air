@@ -22,7 +22,7 @@ EXEC  msdb.dbo.sp_add_jobstep
 EXEC  msdb.dbo.sp_add_schedule  
       @schedule_name = @schedule_name,   
       @freq_type = 4,  -- daily start
-      @freq_interval = 1 -- run every day,
+      @freq_interval = 1, -- run every day
       @active_start_time = '043000'; -- 4:30AM
 
 EXEC  msdb.dbo.sp_attach_schedule  
