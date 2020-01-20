@@ -13,6 +13,7 @@ BEGIN
   else
     set @import_date = (select replace(@import_date, '-', ''))
 
+
 -- Tries to ensure that the import date will match a file name if the script is
 -- manually ran
 IF( 1 <> (SELECT ISNUMERIC(@import_date)) OR 8 <> (SELECT LEN(@import_date)))
@@ -47,6 +48,5 @@ END;
 GO
 
 -- EXEC DailySabreImport
-
 
 
