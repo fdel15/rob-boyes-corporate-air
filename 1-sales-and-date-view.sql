@@ -4,7 +4,7 @@ GO
 
 CREATE VIEW dbo.sales_and_date AS
 
-	SELECT	TOP 10000
+	SELECT	TOP 200000
 			tc.PNRLocatorId,
 			tc.ServiceStartDate,
 			tc.MarketingFlightNbr,

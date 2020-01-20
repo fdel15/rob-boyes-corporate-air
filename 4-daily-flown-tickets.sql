@@ -4,7 +4,7 @@ GO
 
 CREATE VIEW dbo.v_daily_flown_tickets AS
 
-SELECT  TOP 10000
+SELECT  TOP 200000
 		cast(getdate() as date) as Report_Run_Date,
         tc.ServiceStartDate,
         tc.MarketingAirlineCode,

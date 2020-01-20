@@ -4,7 +4,7 @@ GO
 
 CREATE VIEW dbo.v_daily_ticket_sales AS
 
-SELECT  TOP 10000
+SELECT  TOP 200000
         cast(getdate() as date) as Report_Run_Date,
         td.PrimaryDocNbr as PrimaryDocNbr,
         td.PnrLocatorId as PnrLocatorId,

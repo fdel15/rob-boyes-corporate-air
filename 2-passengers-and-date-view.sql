@@ -9,7 +9,7 @@ GO
 
 CREATE VIEW dbo.passengers_and_date AS
 
-SELECT	top 10000
+SELECT	top 200000
 		dbo.ACSPaxFlight.ServiceStartDate,
 		dbo.ACSPaxFlight.FltNbr,
 		dbo.ACSPaxFlight.PaxPNROrigin,

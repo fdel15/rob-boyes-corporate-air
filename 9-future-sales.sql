@@ -5,7 +5,7 @@ GO
 CREATE VIEW dbo.v_future_sales AS
 
 
-SELECT  TOP 10000
+SELECT  TOP 200000
 		tc.PnrLocatorId as PnrLocatorId,
         td.CustomerFullName as Pax_Name,
         tc.ServiceStartDate as TravelDate,

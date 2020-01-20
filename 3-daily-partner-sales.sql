@@ -4,7 +4,7 @@ GO
 
 CREATE VIEW dbo.daily_partner_sales AS
 
-  SELECT  TOP 10000
+  SELECT  TOP 200000
           *
 
   FROM    dbo.v_daily_partner_sales_base
