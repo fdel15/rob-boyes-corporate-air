@@ -1,11 +1,11 @@
-if OBJECT_ID('ImportTktCouponHistoryHistory', 'P') is not null
+if OBJECT_ID('ImportTktCouponHistory', 'P') is not null
   BEGIN
-    print 'Dropping procedure ImportTktCouponHistoryHistory'
-	drop procedure ImportTktCouponHistoryHistory
+    print 'Dropping procedure ImportTktCouponHistory'
+	drop procedure ImportTktCouponHistory
   END
 GO
 
-CREATE PROCEDURE dbo.ImportTktCouponHistoryHistory 
+CREATE PROCEDURE dbo.ImportTktCouponHistory 
     @date_string varchar(8),
     @file_path varchar(512)
 AS
