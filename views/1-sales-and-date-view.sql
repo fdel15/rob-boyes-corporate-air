@@ -1,8 +1,8 @@
-IF OBJECT_ID('dbo.sales_and_date') is NOT NULL
-	DROP VIEW dbo.sales_and_date;
+IF OBJECT_ID('dbo.v_sales_and_date') is NOT NULL
+	DROP VIEW dbo.v_sales_and_date;
 GO
 
-CREATE VIEW dbo.sales_and_date AS
+CREATE VIEW dbo.v_sales_and_date AS
 
 	SELECT	TOP 200000
 			tc.PNRLocatorId,

@@ -1,13 +1,8 @@
--- Passengers x Date
-
--- Caveats:
---  1. To use order by in a VIEW we need to limit the number of records the query returns. Currently it is set to 10_000 records. Does this work for you? Is 10_000 enough?
---  2. Another option would be to move the order by clause from the VIEW to the query the end user writes in MS Access or Excel. This would allow us to return all records in the query. I'm not sure if that works for you.
-IF OBJECT_ID('dbo.passengers_and_date') is NOT NULL
-	DROP VIEW dbo.passengers_and_date;
+IF OBJECT_ID('dbo.v_passengers_and_date') is NOT NULL
+	DROP VIEW dbo.v_passengers_and_date;
 GO
 
-CREATE VIEW dbo.passengers_and_date AS
+CREATE VIEW dbo.v_passengers_and_date AS
 
 SELECT	top 200000
 		dbo.ACSPaxFlight.ServiceStartDate,

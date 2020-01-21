@@ -2,7 +2,7 @@ IF OBJECT_ID('dbo.v_daily_partner_sales') is NOT NULL
 	DROP VIEW dbo.v_daily_partner_sales;
 GO
 
-CREATE VIEW dbo.daily_partner_sales AS
+CREATE VIEW dbo.v_daily_partner_sales AS
 
   SELECT  TOP 200000
           *
