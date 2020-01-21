@@ -5,7 +5,7 @@ GO
 CREATE VIEW dbo.v_daily_ticket_sales AS
 
 SELECT  TOP 200000
-        cast(getdate() as date) as Report_Run_Date,
+        getdate() as Report_Run_Date,
         td.PrimaryDocNbr as PrimaryDocNbr,
         td.PnrLocatorId as PnrLocatorId,
         td.PnrCreateDate as PnrCreateDate,
@@ -20,7 +20,7 @@ FROM    dbo.tktDocument td
                                 and td.PnrCreateDate = tx.PnrCreateDate
 
 WHERE   td.SourceSystemId = 'FC'
-        and td.VcrCreateDate > cast(getdate() - 1 as date) 
+        --and td.VcrCreateDate > cast(getdate() - 1 as date) 
         
 GROUP BY  td.PrimaryDocNbr,
           td.PnrLocatorId,
