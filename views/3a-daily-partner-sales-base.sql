@@ -28,11 +28,14 @@ CREATE VIEW dbo.v_daily_partner_sales_base AS
 			--SELECT MAX(SERVICEENDDATE) FROM CERT_NONFIT_BASE_VIEWS.RESODFLIGHT OD --WHERE OD.PNRLOCATORID = td.PNRLOCATORID
 			--AND OD.PNRCREATEDATE = td.PNRCREATEDATE) AS Last_Return_Date,
 
-FROM	dbo.tktDocument td
-		inner join dbo.tktCoupon tc on td.PnrLocatorId = tc.Pnrlocatorid and td.PnrCreateDate = tc.PnrCreateDate and td.PrimaryDocNbr = tc.PrimaryDocNbr
-		inner join dbo.ResFlight rf ON rf.PnrLocatorId = tc.Pnrlocatorid and rf.servicestartcity = tc.servicestartcity and rf.PnrCreateDate = tc.PnrCreateDate AND rf.intrapnrsetnbr = 0
+	FROM	dbo.tktDocument td
+			inner join dbo.tktCoupon tc on td.PnrLocatorId = tc.Pnrlocatorid 
+				and td.PnrCreateDate = tc.PnrCreateDate
+				and td.PrimaryDocNbr = tc.PrimaryDocNbr
+			inner join dbo.ResFlight rf ON rf.PnrLocatorId = tc.Pnrlocatorid
+				and rf.servicestartcity = tc.servicestartcity
+				and rf.PnrCreateDate = tc.PnrCreateDate
+				and rf.intrapnrsetnbr = 0
 
-WHERE td.SourceSystemId = 'fc'
-      and td.PnrCreateDate > getdate() - 1 
+	WHERE td.SourceSystemId = 'fc'
 GO
-
