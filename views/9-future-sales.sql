@@ -21,7 +21,7 @@ FROM    dbo.tktCoupon tc
           and td.PnrCreateDate = tc.PnrCreateDate
 
 WHERE   td.SourceSystemId = 'FC'
-        and tc.ServiceStartDate > cast(getdate() as date)
+        -- and tc.ServiceStartDate > cast(getdate() as date)
 
 GROUP BY tc.PnrLocatorId, td.CustomerFullName, tc.ServiceStartDate, tc.MarketingFlightNbr,
          tc.ServiceStartCity, tc.ServiceEndCity

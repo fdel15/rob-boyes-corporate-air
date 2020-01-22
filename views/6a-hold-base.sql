@@ -5,7 +5,7 @@ GO
 CREATE VIEW dbo.v_hold_base AS
 
   SELECT  DISTINCT
-          cast(getdate() as date) as Report_Run_Date,
+          getdate() as Report_Run_Date,
           rf.SERVICESTARTDATE,
           rf.FLIGHTNBR,
           rf.SERVICESTARTCITY,
