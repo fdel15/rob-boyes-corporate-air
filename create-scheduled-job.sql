@@ -31,5 +31,5 @@ EXEC  msdb.dbo.sp_attach_schedule
 
 
 EXEC  msdb.dbo.sp_add_jobserver  
-      @job_name = N'MakeDailyJob',  
+      @job_name = @job_name,  
       @server_name = @@servername;
