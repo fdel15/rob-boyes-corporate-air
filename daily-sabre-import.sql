@@ -9,7 +9,7 @@ CREATE PROCEDURE dbo.DailySabreImport @import_date varchar(25) = null AS
 BEGIN
 
   if (@import_date is null)
-    set @import_date = convert(varchar, getdate(), 112)
+    set @import_date = convert(varchar, getdate() - 1, 112)
   else
     set @import_date = (select replace(@import_date, '-', ''))
 
