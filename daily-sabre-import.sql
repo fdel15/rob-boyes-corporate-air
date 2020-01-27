@@ -5,7 +5,11 @@ if OBJECT_ID('DailySabreImport', 'P') is not null
   END
 GO
 
-CREATE PROCEDURE dbo.DailySabreImport @import_date varchar(25) = null AS
+CREATE PROCEDURE dbo.DailySabreImport
+  @import_date varchar(25) = null,
+  @import_file_path nvarchar(512) = null
+
+AS
 BEGIN
 
   if (@import_date is null)
@@ -21,9 +25,9 @@ IF( 1 <> (SELECT ISNUMERIC(@import_date)) OR 8 <> (SELECT LEN(@import_date)))
     RAISERROR('Invalid date format. Import date must be specified as yyyy-mm-dd', 16, 1)
     return
   END
-
-
-  DECLARE @import_file_path NVARCHAR(512) = 'E:\company_data\Sabre\Files\travelbatch'
+  
+  if @import_file_path is null
+    set @import_file_path = 'E:\company_data\Sabre\Files\travelbatch'
 
   -- APPENDS DATA To existing table
 

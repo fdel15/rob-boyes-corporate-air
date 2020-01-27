@@ -1,0 +1,338 @@
+  
+IF OBJECT_ID('dbo.v_sales_and_date') is NOT NULL
+	DROP VIEW dbo.v_sales_and_date;
+GO
+
+CREATE VIEW dbo.v_sales_and_date AS
+
+	SELECT	DISTINCT
+			TOP 200000
+			tc.PNRLocatorId,
+			tc.ServiceStartDate,
+			tc.MarketingFlightNbr,
+			tc.ServiceStartCity,
+			tc.ServiceEndCity,
+			td.CustomerFullName as pax_name,
+			td.TotalDocAmt,
+			tc.CouponStatus
+
+	FROM	dbo.tktcoupon tc
+			inner join dbo.tktdocument td on td.primarydocnbr = tc.primarydocnbr
+
+	WHERE	td.SourceSystemId = 'fc'
+
+	ORDER BY tc.servicestartdate, tc.servicestartcity, tc.pnrlocatorid
+GO
+IF OBJECT_ID('dbo.v_passengers_and_date') is NOT NULL
+	DROP VIEW dbo.v_passengers_and_date;
+GO
+
+CREATE VIEW dbo.v_passengers_and_date AS
+
+SELECT	top 200000
+		dbo.ACSPaxFlight.ServiceStartDate,
+		dbo.ACSPaxFlight.FltNbr,
+		dbo.ACSPaxFlight.PaxPNROrigin,
+		dbo.ACSPaxFlight.PaxPNRDest,
+		count(dbo.ACSPaxFlight.NameLast) AS CountOfNameLast
+
+FROM	dbo.ACSPaxFlight
+
+--WHERE	dbo.ACSPaxFlight.AirlineCode ='FC'
+--		and dbo.ACSPaxFlight.OnBrdInd = 'Y'
+--		and dbo.ACSPaxFlight.PaxThruInd = 'N'
+
+GROUP BY dbo.ACSPaxFlight.ServiceStartDate, dbo.ACSPaxFlight.FltNbr, dbo.ACSPaxFlight.PaxPNROrigin, dbo.ACSPaxFlight.PaxPNRDest, dbo.ACSPaxFlight.AirlineCode, dbo.ACSPaxFlight.OnBrdInd, dbo.ACSPaxFlight.PaxThruInd
+
+HAVING (((dbo.ACSPaxFlight.AirlineCode) = 'FC') and ((dbo.ACSPaxFlight.OnBrdInd)='Y') AND ((dbo.ACSPaxFlight.PaxThruInd)='N'))
+
+ORDER BY dbo.ACSPaxFlight.ServiceStartDate, dbo.ACSPaxFlight.FltNbr, dbo.ACSPaxFlight.PaxPNROrigin, dbo.ACSPaxFlight.PaxPNRDest;
+GO
+
+IF OBJECT_ID('dbo.v_daily_partner_sales') is NOT NULL
+	DROP VIEW dbo.v_daily_partner_sales;
+GO
+
+CREATE VIEW dbo.v_daily_partner_sales AS
+
+  SELECT  TOP 200000
+          *
+
+  FROM    dbo.v_daily_partner_sales_base
+      
+  ORDER BY 2,3
+GO
+
+IF OBJECT_ID('dbo.v_daily_partner_sales_base') is NOT NULL
+	DROP VIEW dbo.v_daily_partner_sales_base;
+GO
+
+CREATE VIEW dbo.v_daily_partner_sales_base AS
+
+	SELECT	DISTINCT
+			getdate() as Report_Run_Date,
+			case 
+				when cast(tc.MarketingFlightnBr as integer) between 0 and 199 then 'Fly FC Booking'  -- How to handle if flight number is three digits, ex: 228? Should it be the same behavior as 0228
+				when cast(tc.MarketingFlightnBr as integer) between 1000 and 1999 then 'Fly FC Booking' 
+				else 'Corporate Air Booking'
+			end as Booking_Partner,
+			rf.PnrLocatorId as Pnr_Locator_Id,
+			rf.PnrCreateDate reaterateeate_Date,
+			isnull(passengertype, 'ADT') as Pax_Type,
+			tc.ServiceStartCity as Origin,
+			tc.ServiceEndCity as Destination,
+			td.CustomerFullName AS PAX_NAME,
+			td.PrimaryDocNbr as Ticket,
+			tc.CouponSeqNbr as Coupon_Seq,
+			tc.ClassOfService as Booking_Class,
+			tc.MarketingFlightnBr as Mktg_Flight_Nbr,
+			tc.ServiceStartDate as Flight_Date,
+			cast(td.BaseFareAmt as decimal(8,2)) as Base_Fare -- changed tc.ProrateBaseFareAmt to td.BaseFareAmt because ProrateBaseFareAmt does not exist in DB
+
+			-- Not sure why the below code is commented out?
+			--SELECT MAX(SERVICEENDDATE) FROM CERT_NONFIT_BASE_VIEWS.RESODFLIGHT OD --WHERE OD.PNRLOCATORID = td.PNRLOCATORID
+			--AND OD.PNRCREATEDATE = td.PNRCREATEDATE) AS Last_Return_Date,
+
+	FROM	dbo.tktDocument td
+			inner join dbo.tktCoupon tc on td.PnrLocatorId = tc.Pnrlocatorid 
+				and td.PnrCreateDate = tc.PnrCreateDate
+				and td.PrimaryDocNbr = tc.PrimaryDocNbr
+			inner join dbo.ResFlight rf ON rf.PnrLocatorId = tc.Pnrlocatorid
+				and rf.servicestartcity = tc.servicestartcity
+				and rf.PnrCreateDate = tc.PnrCreateDate
+				and rf.intrapnrsetnbr = 0
+
+	WHERE td.SourceSystemId = 'fc'
+GO
+IF OBJECT_ID('dbo.v_daily_flown_tickets') is NOT NULL
+	DROP VIEW dbo.v_daily_flown_tickets;
+GO
+
+CREATE VIEW dbo.v_daily_flown_tickets AS
+    SELECT  DISTINCT
+            TOP 200000
+            getdate() as Report_Run_Date,
+            tc.ServiceStartDate,
+            tc.MarketingAirlineCode,
+            tc.MarketingFlightNbr,
+            tc.ServiceStartCity as BookedBoardPoint,
+            tc.ServiceEndCity as BookedOffPoint,
+            tc.PNRLocatorId,
+            tc.PrimaryDocNbr,
+            tc.CouponSeqNbr,
+            tc.CouponStatus,
+            --tc.CouponUsageCode column name does not exist,
+            tc.PreviousCouponStatusCode,
+            tc.FlownFlightNbr,
+            tc.FlownServiceStartDate,
+            tc.FlownServiceStartCity,
+            tc.FlownServiceEndCity,
+            td.CustomerFullName
+
+    FROM    dbo.tktCoupon tc
+            inner join dbo.tktDocument td on tc.PrimaryDocNbr = td.PrimaryDocNbr
+
+    WHERE   td.SourceSystemID = 'FC'
+            --and isnull(tc.FlownServiceStartDate, tc.ServiceStartDate) = cast(getdate() - 1 as date)
+            and (tc.MarketingAirlineCode = 'FC' or tc.OperatingAirlineCode = 'FC')
+            and not exists (
+            SELECT  1
+            FROM    dbo.tktDocument _td
+            WHERE   _td.SourceSystemID = 'FC'
+                    and _td.DocTypeCode = 'EMD'
+                    and tc.PrimaryDocNbr = _td.PrimaryDocNbr
+            )
+
+    ORDER BY 1,2,3,4,5,6,7,8,9
+GO
+IF OBJECT_ID('dbo.v_daily_ticket_sales') is NOT NULL
+	DROP VIEW dbo.v_daily_ticket_sales;
+GO
+
+CREATE VIEW dbo.v_daily_ticket_sales AS
+
+SELECT  TOP 200000
+        getdate() as Report_Run_Date,
+        td.PrimaryDocNbr as PrimaryDocNbr,
+        td.PnrLocatorId as PnrLocatorId,
+        td.PnrCreateDate as PnrCreateDate,
+        tx.TaxCode as TaxCode,
+        isnull(td.PassengerType, 'ADT') as Pax_Type,
+        cast(td.TotalDocAmt as decimal(8,2)) as TotalDocAmt,
+        cast (SUM(tx.TaxAmt) as decimal(8,2)) as Total_Tax
+
+FROM    dbo.tktDocument td
+        LEFT JOIN dbo.tktTax tx on td.PrimaryDocNbr = tx.PrimaryDocNbr 
+                                and td.PnrLocatorId = tx.PnrLocatorId
+                                and td.PnrCreateDate = tx.PnrCreateDate
+
+WHERE   td.SourceSystemId = 'FC'
+        --and td.VcrCreateDate > cast(getdate() - 1 as date) 
+        
+GROUP BY  td.PrimaryDocNbr,
+          td.PnrLocatorId,
+          td.PnrCreateDate,
+          tx.TaxCode,
+          td.PassengerType,td.TotalDocAmt
+
+ORDER BY  td.PnrLocatorId, td.PrimaryDocNbr
+GO
+IF OBJECT_ID('dbo.v_hold') is NOT NULL
+	DROP VIEW dbo.v_hold;
+GO
+
+CREATE VIEW dbo.v_hold AS
+
+  SELECT  TOP 200000
+		  *
+
+  FROM	  dbo.v_hold_base
+
+  ORDER BY SERVICESTARTDATE, PNRLOCATORID, SEGMENTNBR
+GO
+IF OBJECT_ID('dbo.v_hold_base') is NOT NULL
+	DROP VIEW dbo.v_hold_base;
+GO
+
+CREATE VIEW dbo.v_hold_base AS
+
+  SELECT  DISTINCT
+          getdate() as Report_Run_Date,
+          rf.SERVICESTARTDATE,
+          rf.FLIGHTNBR,
+          rf.SERVICESTARTCITY,
+          rf.SERVICEENDCITY,
+          rf.PNRLOCATORID,
+          rf.PNRCREATEDATE,
+          rf.CurrentSegmentStatusCode,
+          rf.PreviousSegmentStatusCode,
+          rf.HistoryActionCodeId,
+          rf.ChangeSegmentStatusIndicator,
+          rf.CLASSOFSERVICE,
+          rf.SEGMENTNBR,
+          rp.NAMEFIRST + '/' + rp.NAMELAST as Pax_Name
+
+  FROM      dbo.ResFlight rf
+            LEFT OUTER JOIN dbo.TKTDOCUMENT td ON td.PNRLOCATORID = rf.PNRLOCATORID
+                                              AND td.PNRCREATEDATE = rf.PNRCREATEDATE
+
+            INNER JOIN dbo.respassenger rp on rp.pnrlocatorid = rf.pnrlocatorid
+                                           and rp.pnrcreatedate = rf.pnrcreatedate
+
+  WHERE   td.SOURCESYSTEMID = 'FC' 
+          and rf.PNRCREATEDATE > '2019-11-19'
+          and rf.INTRAPNRSETNBR = 0
+          and rp.intrapnrsetnbr = 0
+		  and td.PRIMARYDOCNBR IS NULL
+GO
+IF OBJECT_ID('dbo.v_daily_summary_by_route') is NOT NULL
+	DROP VIEW dbo.v_daily_summary_by_route;
+GO
+
+CREATE VIEW dbo.v_daily_summary_by_route AS
+
+  SELECT  TOP 200000
+          *
+
+  FROM    dbo.v_daily_summary_by_route_base
+
+  ORDER BY Report_Run_Date, Origin
+GO
+
+IF OBJECT_ID('dbo.v_daily_summary_by_route_base') is NOT NULL
+	DROP VIEW dbo.v_daily_summary_by_route_base;
+GO
+
+CREATE VIEW dbo.v_daily_summary_by_route_base AS
+
+SELECT  DISTINCT
+        getdate() as Report_Run_Date,
+        tc.ServiceStartCity as Origin,
+        tc.ServiceEndCity as Destination,
+        count(rf.PnrLocatorId) as Number_of_Bookings,
+        sum(cast(td.BaseFareAmt as decimal(8,2)) ) as Summed_Base_Fare
+
+FROM    dbo.tktDocument td
+        INNER JOIN dbo.tktcoupon tc on td.pnrlocatorid = tc.pnrlocatorid
+                                    and td.pnrcreatedate = tc.pnrcreatedate
+                                    and td.PRIMARYDOCNBR = tc.PRIMARYDOCNBR
+        INNER JOIN dbo.ResFlight rf ON rf.pnrlocatorid = tc.pnrlocatorid
+                                    and rf.servicestartcity = tc.servicestartcity
+                                    and rf.pnrcreatedate = tc.pnrcreatedate
+                                    and INTRAPNRSETNBR = 0
+where   td.sourcesystemid = 'fc'
+        --and td.PNRCREATEDATE > cast(getdate() - 10 as date) 
+        
+group by tc.ServiceStartCity, tc.ServiceEndCity
+GO
+IF OBJECT_ID('dbo.v_expiring_tickets') is NOT NULL
+	DROP VIEW dbo.v_expiring_tickets;
+GO
+
+CREATE VIEW dbo.v_expiring_tickets AS
+
+
+	SELECT  TOP 200000
+			*
+	
+	FROM	v_expiring_tickets_base
+
+	ORDER BY Current_Origin, Ticket_Expiry_Date, Current_Destination
+
+GO
+IF OBJECT_ID('dbo.v_expiring_tickets_base') is NOT NULL
+	DROP VIEW dbo.v_expiring_tickets_base;
+GO
+
+CREATE VIEW dbo.v_expiring_tickets_base AS
+
+	SELECT	DISTINCT
+					tc.vcrcreatedate as Original_Ticketing_Date,
+					cast(cast(tc.vcrcreatedate as datetime) + 365 as date) as Ticket_Expiry_Date,
+					tc.couponseqnbr as Coupon_Seq_Nbr,
+					tc.Servicestartcity as Current_Origin,
+					tc.serviceendcity as Current_Destination,
+					tc.pnrlocatorid as Booking_Locator,
+					td.customerfullname as Pax_Name
+
+	FROM		dbo.tktcoupon tc
+					inner join dbo.tktDocument td on tc.primarydocnbr = td.primarydocnbr
+						and tc.pnrlocatorid = td.pnrlocatorid
+						and td.pnrcreatedate = tc.pnrcreatedate
+
+	WHERE		td.sourcesystemid = 'fc'
+					and tc.couponstatus = 'ok'
+					and cast(cast(tc.vcrcreatedate as datetime) + 365 as date)  > cast(getdate() as date)
+					and cast(cast(tc.vcrcreatedate as datetime) + 365 as date) < cast(getdate() + 7 as date) 
+GO
+
+IF OBJECT_ID('dbo.v_future_sales') is NOT NULL
+	DROP VIEW dbo.v_future_sales;
+GO
+
+CREATE VIEW dbo.v_future_sales AS
+
+
+SELECT  TOP 200000
+		tc.PnrLocatorId as PnrLocatorId,
+        td.CustomerFullName as Pax_Name,
+        tc.ServiceStartDate as TravelDate,
+        tc.MarketingFlightNbr as FlightNumber,
+        tc.ServiceStartCity as DepartingAirport,
+        tc.ServiceEndCity as ArrivingAirport,
+        count(*) as TotalOfTicketsPurchased
+
+
+FROM    dbo.tktCoupon tc
+        inner join dbo.tktDocument td on tc.PrimaryDocNbr = td.PrimaryDocNbr
+          and tc.PnrLocatorId = td.PnrLocatorId
+          and td.PnrCreateDate = tc.PnrCreateDate
+
+WHERE   td.SourceSystemId = 'FC'
+        -- and tc.ServiceStartDate > cast(getdate() as date)
+
+GROUP BY tc.PnrLocatorId, td.CustomerFullName, tc.ServiceStartDate, tc.MarketingFlightNbr,
+         tc.ServiceStartCity, tc.ServiceEndCity
+
+ORDER BY tc.ServiceStartDate, tc.MarketingFlightNbr
+GO
