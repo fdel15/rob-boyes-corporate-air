@@ -57,10 +57,8 @@ BEGIN
 
     EXEC(@bulk_insert_sql)
 
-    SET @number_of_import_rows = (select count(*) from temp_TktFees)
-
-
-    PRINT 'Ammending ' + cast(@number_of_import_rows as varchar) + ' rows to TktFees'
+    PRINT char(13) + char(13)
+    PRINT 'Amending rows to TktFees' + char(13)
 
     update TktFees
     set RecordIndicator	= t2.RecordIndicator,
@@ -81,5 +79,18 @@ BEGIN
           
   from	TktFees t1
         inner join temp_TktFees t2 on t1.PrimaryDocNbr = t2.PrimaryDocNbr and t1.VCRCreateDate = t2.VCRCreateDate
+        
+        
+    PRINT char(13) + char(13)
+    PRINT 'Appending rows to TktFees' + char(13)
+    
+    insert TktFees
+    select *
+    from   temp_TktFees t1
+    where  not exists (
+      select 1
+      from   TktFees _t1
+      where _t1.PrimaryDocNbr = t1.PrimaryDocNbr and _t1.VCRCreateDate = t1.VCRCreateDate
+    )
 END;
 GO
