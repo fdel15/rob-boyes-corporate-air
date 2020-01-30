@@ -35,7 +35,7 @@ IF( 1 <> (SELECT ISNUMERIC(@import_date)) OR 8 <> (SELECT LEN(@import_date)))
   EXEC ImportACSPaxVCR @import_date, @import_file_path
   EXEC ImportACSPaxFlight @import_date, @import_file_path
 
-  -- AMMENDS Existing data in table
+  -- AMMENDS Existing data in table AND APPENDS new data
   EXEC ImportRes @import_date, @import_file_path
   EXEC ImportResPassenger @import_date, @import_file_path
   EXEC ImportResRemark @import_date, @import_file_path
@@ -46,11 +46,14 @@ IF( 1 <> (SELECT ISNUMERIC(@import_date)) OR 8 <> (SELECT LEN(@import_date)))
   EXEC ImportTktDocument @import_date, @import_file_path
   EXEC ImportTktFees @import_date, @import_file_path
   EXEC ImportTktTax @import_date, @import_file_path
+  EXEC ImportTktProration @import_date, @import_file_path
+
 
 
 END;
 GO
 
--- EXEC DailySabreImport
+-- EXEC DailySabreImport '2020-12-06', 'E:\Sabre_FILES_tobedeleted\PROD\travelbatch\Extracted_DAT_Files'
+
 
 
