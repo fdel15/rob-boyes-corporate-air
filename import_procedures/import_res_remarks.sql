@@ -51,10 +51,9 @@ BEGIN
 
     EXEC(@bulk_insert_sql)
 
-    SET @number_of_import_rows = (select count(*) from temp_ResRemark)
+    PRINT char(13) + char(13)
 
-
-    PRINT 'Ammending ' + cast(@number_of_import_rows as varchar) + ' rows to ResRemark'
+    PRINT 'Ammending rows to ResRemarks' + char(13)
 
     update ResRemark
     set RecordIndicator = t2.RecordIndicator,
@@ -71,6 +70,18 @@ BEGIN
 
   from	ResRemark t1
         inner join temp_ResRemark t2 on t1.PNRLocatorID = t2.PNRLocatorID and t1.PNRCreateDate = t2.PNRCreateDate
+        
+    PRINT char(13) + char(13)
+    PRINT 'Appending rows to ResRemarks' + char(13)
+    
+    insert ResRemark
+    select *
+    from   temp_ResRemark t1
+    where  not exists (
+      select 1
+      from   ResRemark _t1
+      where _t1.PNRLocatorID = t1.PNRLocatorID and _t1.PNRCreateDate = t1.PNRCreateDate
+    )
 END;
 GO
 
