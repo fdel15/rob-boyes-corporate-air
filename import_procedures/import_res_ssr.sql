@@ -62,10 +62,8 @@ BEGIN
 
     EXEC(@bulk_insert_sql)
 
-    SET @number_of_import_rows = (select count(*) from temp_ResSSR)
-
-
-    PRINT 'Ammending ' + cast(@number_of_import_rows as varchar) + ' rows to ResSSR'
+    PRINT char(13) + char(13)
+    PRINT 'Appending rows to ResSSR' + char(13)
 
     update ResSSR
     set RecordIndicator = tres.RecordIndicator,
@@ -91,5 +89,18 @@ BEGIN
           
   from	ResSSR r 
         inner join temp_ResSSR tres on r.PNRLocatorID = tres.PNRLocatorID and r.PNRCreateDate = tres.PNRCreateDate
+        
+        
+    PRINT char(13) + char(13)
+    PRINT 'Appending rows to ResSSRs' + char(13)
+    
+    insert ResSSR
+    select *
+    from   temp_ResSSR t1
+    where  not exists (
+      select 1
+      from   ResSSR _t1
+      where _t1.PNRLocatorID = t1.PNRLocatorID and _t1.PNRCreateDate = t1.PNRCreateDate
+    )
 END;
 GO
