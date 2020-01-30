@@ -74,10 +74,8 @@ BEGIN
 
     EXEC(@bulk_insert_sql)
 
-    SET @number_of_import_rows = (select count(*) from temp_Res)
-
-
-    PRINT 'Ammending ' + cast(@number_of_import_rows as varchar) + ' rows to Res'
+    PRINT char(13) + char(13)
+    PRINT 'Ammending rows to Res' + char(13)
 
     update Res
     set FromDateTime = tr.FromDateTime,
@@ -112,6 +110,18 @@ BEGIN
 	
   from	Res r 
         inner join temp_Res tr on r.PNRLocationId = tr.PNRLocationId and r.PNRCreateDate = tr.PNRCreateDate
+        
+    PRINT char(13) + char(13)
+    PRINT 'Appending rows to Res' + char(13)
+    
+    insert Res
+    select *
+    from   temp_Res t1
+    where  not exists (
+      select 1
+      from   Res _t1
+      where _t1.PNRLocationId = t1.PNRLocationId and _t1.PNRCreateDate = t1.PNRCreateDate
+    )
 END;
 GO
 
