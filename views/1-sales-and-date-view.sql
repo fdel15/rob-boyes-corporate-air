@@ -13,11 +13,12 @@ CREATE VIEW dbo.v_sales_and_date AS
 			tc.ServiceStartCity,
 			tc.ServiceEndCity,
 			td.CustomerFullName as pax_name,
-			td.TotalDocAmt,
+			tp.ProrateTotalDocOwnerAmt,
 			tc.CouponStatus
 
 	FROM	dbo.tktcoupon tc
 			inner join dbo.tktdocument td on td.primarydocnbr = tc.primarydocnbr
+			inner join dbo.tktProration tp on tp.primarydocnbr = td.primarydocnbr
 
 	WHERE	td.SourceSystemId = 'fc'
 
