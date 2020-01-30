@@ -129,10 +129,8 @@ BEGIN
 
     EXEC(@bulk_insert_sql)
 
-    SET @number_of_import_rows = (select count(*) from temp_TktDocument)
-
-
-    PRINT 'Ammending ' + cast(@number_of_import_rows as varchar) + ' rows to TktDocument'
+    PRINT char(13) + char(13)
+    PRINT 'Amending rows to TktDocument' + char(13)
 
     update TktDocument
     set RecordIndicator	= t2.RecordIndicator,
@@ -225,6 +223,19 @@ BEGIN
           
   from	TktDocument t1
         inner join temp_TktDocument t2 on t1.PrimaryDocNbr = t2.PrimaryDocNbr and t1.VCRCreateDate = t2.VCRCreateDate
+        
+        
+    PRINT char(13) + char(13)
+    PRINT 'Appending rows to TktDocument' + char(13)
+    
+    insert TktDocument
+    select *
+    from   temp_TktDocument t1
+    where  not exists (
+      select 1
+      from   TktDocument _t1
+      where _t1.PrimaryDocNbr = t1.PrimaryDocNbr and _t1.VCRCreateDate = t1.VCRCreateDate
+    )
 END;
 GO
 
