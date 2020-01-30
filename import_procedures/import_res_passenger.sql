@@ -13,8 +13,7 @@ BEGIN
   
   DECLARE @file_name varchar(512) = 'ResPassenger' + '_' + @date_string +'.dat',
           @full_file_name varchar(1500),
-          @bulk_insert_sql varchar(4000),
-          @number_of_import_rows int
+          @bulk_insert_sql varchar(4000)
 
   SET @full_file_name = @file_path + '\' + @file_name
 
@@ -52,11 +51,10 @@ BEGIN
     PRINT 'Bulk inserting data from ' + @full_file_name + ' into temp table'
 
     EXEC(@bulk_insert_sql)
+    
+    PRINT char(13) + char(13)
 
-    SET @number_of_import_rows = (select count(*) from temp_ResPassenger)
-
-
-    PRINT 'Ammending ' + cast(@number_of_import_rows as varchar) + ' rows to ResPassenger'
+    PRINT 'Ammending rows to ResPassenger' + char(13)
 
     update ResPassenger
     set RecordIndicator = trp.RecordIndicator,
@@ -73,6 +71,23 @@ BEGIN
           
   from	ResPassenger r 
         inner join temp_ResPassenger trp on r.PNRLocatorID = trp.PNRLocatorID and r.PNRCreateDate = trp.PNRCreateDate
+        
+  
+   PRINT char(13) + char(13)
+   PRINT 'Appending rows to ResPassenger' + char(13)
+        
+   insert ResPassenger
+   select *
+   
+   from   temp_ResPassenger tr
+   
+   where  not exists (
+     select 1
+     
+     from   ResPassenger _rp
+     
+     where _rp.PNRLocatorID = tr.PNRLocatorID and _rp.PNRCreateDate = tr.PNRCreateDate
+   )
 END;
 GO
 
