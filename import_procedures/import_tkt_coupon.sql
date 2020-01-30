@@ -86,10 +86,8 @@ BEGIN
 
     EXEC(@bulk_insert_sql)
 
-    SET @number_of_import_rows = (select count(*) from temp_TktCoupon)
-
-
-    PRINT 'Ammending ' + cast(@number_of_import_rows as varchar) + ' rows to TktCoupon'
+    PRINT char(13) + char(13)
+    PRINT 'Amending rows to TktCoupon' + char(13)
 
     update TktCoupon
     set RecordIndicator = tktc.RecordIndicator,
@@ -139,6 +137,19 @@ BEGIN
           
   from	TktCoupon tc
         inner join temp_TktCoupon tktc on tc.PrimaryDocNbr = tktc.PrimaryDocNbr and tc.VCRCreateDate = tktc.VCRCreateDate
+        
+        
+    PRINT char(13) + char(13)
+    PRINT 'Appending rows to TktCoupon' + char(13)
+    
+    insert TktCoupon
+    select *
+    from   temp_TktCoupon t1
+    where  not exists (
+      select 1
+      from   TktCoupon _t1
+      where _t1.PrimaryDocNbr = t1.PrimaryDocNbr and _t1.VCRCreateDate = t1.VCRCreateDate
+    )
 END;
 GO
 

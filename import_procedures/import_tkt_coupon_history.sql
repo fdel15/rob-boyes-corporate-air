@@ -99,7 +99,7 @@ BEGIN
         inner join temp_TktCouponHistory tktch on tktch.PrimaryDocNbr = tch.PrimaryDocNbr and tktch.VCRCreateDate = tch.VCRCreateDate
         
     PRINT char(13) + char(13)
-    PRINT 'Appending rows to Res' + char(13)
+    PRINT 'Appending rows to TktCouponHistory' + char(13)
     
     insert TktCouponHistory
     select *
