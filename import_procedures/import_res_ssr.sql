@@ -63,7 +63,7 @@ BEGIN
     EXEC(@bulk_insert_sql)
 
     PRINT char(13) + char(13)
-    PRINT 'Appending rows to ResSSR' + char(13)
+    PRINT 'Ammending rows to ResSSR' + char(13)
 
     update ResSSR
     set RecordIndicator = tres.RecordIndicator,
