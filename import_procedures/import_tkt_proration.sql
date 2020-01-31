@@ -84,7 +84,9 @@ BEGIN
         ProrateTotalDocOwnerAmt = t2.ProrateTotalDocOwnerAmt
           
   from	TktProration t1
-        inner join temp_TktProration t2 on t2.PrimaryDocNbr = t1.PrimaryDocNbr and t2.VCRCreateDate = t1.VCRCreateDate
+        inner join temp_TktProration t2 on t2.PrimaryDocNbr = t1.PrimaryDocNbr
+          and t2.VCRCreateDate = t1.VCRCreateDate
+          and t2.CouponSeqNbr = t1.CouponSeqNbr
         
     PRINT char(13) + char(13)
     PRINT 'Appending rows to TktProration' + char(13)
@@ -95,7 +97,9 @@ BEGIN
     where  not exists (
       select 1
       from   TktProration _t1
-      where _t1.PrimaryDocNbr = t1.PrimaryDocNbr and _t1.VCRCreateDate = t1.VCRCreateDate
+      where _t1.PrimaryDocNbr = t1.PrimaryDocNbr 
+            and _t1.VCRCreateDate = t1.VCRCreateDate
+            and _t1.CouponSeqNbr = t1.CouponSeqNbr
     )
 END;
 GO
