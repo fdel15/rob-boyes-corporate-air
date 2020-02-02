@@ -68,7 +68,12 @@ BEGIN
         TaxCurrCode	= t2.TaxCurrCode
 
   from	TktTax t1
-        inner join temp_TktTax t2 on t1.PrimaryDocNbr = t2.PrimaryDocNbr and t1.VCRCreateDate = t2.VCRCreateDate
+        inner join temp_TktTax t2 on t1.PrimaryDocNbr = t2.PrimaryDocNbr
+          and t1.VCRCreateDate = t2.VCRCreateDate
+          and t1.TaxSeqNbr = t2.TaxSeqNbr
+          and t1.TaxCode = t2.TaxCode
+          and t1.TaxCategoryCode = t2.TaxCategoryCode
+          
         
         
     PRINT char(13) + char(13)
@@ -80,7 +85,11 @@ BEGIN
     where  not exists (
       select 1
       from   TktTax _t1
-      where _t1.PrimaryDocNbr = t1.PrimaryDocNbr and _t1.VCRCreateDate = t1.VCRCreateDate
+      where _t1.PrimaryDocNbr = t1.PrimaryDocNbr
+        and _t1.VCRCreateDate = t1.VCRCreateDate
+        and _t1.TaxSeqNbr = t1.TaxSeqNbr
+        and _t1.TaxCode = t1.TaxCode
+        and _t1.TaxCategoryCode = t1.TaxCategoryCode
     )
 END;
 GO

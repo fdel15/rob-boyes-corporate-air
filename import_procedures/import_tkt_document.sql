@@ -222,7 +222,9 @@ BEGIN
         PricedPassengerType	= t2.PricedPassengerType
           
   from	TktDocument t1
-        inner join temp_TktDocument t2 on t1.PrimaryDocNbr = t2.PrimaryDocNbr and t1.VCRCreateDate = t2.VCRCreateDate
+        inner join temp_TktDocument t2 on t1.PrimaryDocNbr = t2.PrimaryDocNbr
+          and t1.VCRCreateDate = t2.VCRCreateDate
+          and t1.Add1ExchgTktData = t2.Add1ExchgTktData
         
         
     PRINT char(13) + char(13)
@@ -234,7 +236,9 @@ BEGIN
     where  not exists (
       select 1
       from   TktDocument _t1
-      where _t1.PrimaryDocNbr = t1.PrimaryDocNbr and _t1.VCRCreateDate = t1.VCRCreateDate
+      where  _t1.PrimaryDocNbr = t1.PrimaryDocNbr
+             and _t1.VCRCreateDate = t1.VCRCreateDate
+             and _t1.Add1ExchgTktData = t1.Add1ExchgTktData
     )
 END;
 GO

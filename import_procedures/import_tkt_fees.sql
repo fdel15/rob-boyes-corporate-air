@@ -78,7 +78,10 @@ BEGIN
         FeeWaiverCd	= t2.FeeWaiverCd
           
   from	TktFees t1
-        inner join temp_TktFees t2 on t1.PrimaryDocNbr = t2.PrimaryDocNbr and t1.VCRCreateDate = t2.VCRCreateDate
+        inner join temp_TktFees t2 on t1.PrimaryDocNbr = t2.PrimaryDocNbr
+          and t1.VCRCreateDate = t2.VCRCreateDate
+          and t1.SourceSystemId = t2.SourceSystemId
+          and t1.FeeSequenceNbr = t2.FeeSequenceNbr
         
         
     PRINT char(13) + char(13)
@@ -90,7 +93,10 @@ BEGIN
     where  not exists (
       select 1
       from   TktFees _t1
-      where _t1.PrimaryDocNbr = t1.PrimaryDocNbr and _t1.VCRCreateDate = t1.VCRCreateDate
+      where  _t1.PrimaryDocNbr = t1.PrimaryDocNbr
+             and _t1.VCRCreateDate = t1.VCRCreateDate
+             and _t1.SourceSystemId = t1.SourceSystemId
+             and _t1.FeeSequenceNbr = t1.FeeSequenceNbr
     )
 END;
 GO

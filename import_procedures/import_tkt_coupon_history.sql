@@ -96,7 +96,13 @@ BEGIN
         HistorySeqNbr = tktch.HistorySeqNbr
           
   from	TktCouponHistory tch
-        inner join temp_TktCouponHistory tktch on tktch.PrimaryDocNbr = tch.PrimaryDocNbr and tktch.VCRCreateDate = tch.VCRCreateDate
+        inner join temp_TktCouponHistory tktch on tktch.PrimaryDocNbr = tch.PrimaryDocNbr 
+          and tktch.VCRCreateDate = tch.VCRCreateDate
+          and tktch.CouponSeqNbr = tch.CouponSeqNbr
+          and tktch.CouponNbrChanged = tch.CouponNbrChanged
+          and tktch.LastUpdate = tch.LastUpdate
+          and tktch.LastUpdateSysTime = tch.LastUpdateSysTime
+          and tktch.HistorySeqNbr = tch.HistorySeqNbr
         
     PRINT char(13) + char(13)
     PRINT 'Appending rows to TktCouponHistory' + char(13)
@@ -107,7 +113,13 @@ BEGIN
     where  not exists (
       select 1
       from   TktCouponHistory _t1
-      where _t1.PrimaryDocNbr = t1.PrimaryDocNbr and _t1.VCRCreateDate = t1.VCRCreateDate
+      where _t1.PrimaryDocNbr = t1.PrimaryDocNbr
+            and _t1.VCRCreateDate = t1.VCRCreateDate
+            and _t1.CouponSeqNbr = t1.CouponSeqNbr
+            and _t1.CouponNbrChanged = t1.CouponNbrChanged
+            and _t1.LastUpdate = t1.LastUpdate
+            and _t1.LastUpdateSysTime = t1.LastUpdateSysTime
+            and _t1.HistorySeqNbr = t1.HistorySeqNbr
     )
 END;
 GO

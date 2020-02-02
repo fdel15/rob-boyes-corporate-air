@@ -70,7 +70,14 @@ BEGIN
         IntraPNRSetNbr = trp.IntraPNRSetNbr
           
   from	ResPassenger r 
-        inner join temp_ResPassenger trp on r.PNRLocatorID = trp.PNRLocatorID and r.PNRCreateDate = trp.PNRCreateDate
+        inner join temp_ResPassenger trp on r.PNRLocatorID = trp.PNRLocatorID
+          and r.PNRCreateDate = trp.PNRCreateDate
+          and r.PNRPassengerSeqId = trp.PNRPassengerSeqId
+          and r.RelativePassengerNbr = trp.RelativePassengerNbr
+          and r.NameFirst = trp.NameFirst
+          and r.NameComment = trp.NameComment
+          and r.HistoryActionCodeId = trp.HistoryActionCodeId
+          and r.IntraPNRSetNbr = trp.IntraPNRSetNbr
         
   
    PRINT char(13) + char(13)
@@ -86,7 +93,14 @@ BEGIN
      
      from   ResPassenger _rp
      
-     where _rp.PNRLocatorID = tr.PNRLocatorID and _rp.PNRCreateDate = tr.PNRCreateDate
+     where _rp.PNRLocatorID = tr.PNRLocatorID 
+          and _rp.PNRCreateDate = tr.PNRCreateDate
+          and _rp.PNRPassengerSeqId = tr.PNRPassengerSeqId
+          and _rp.RelativePassengerNbr = tr.RelativePassengerNbr
+          and _rp.NameFirst = tr.NameFirst
+          and _rp.NameComment = tr.NameComment
+          and _rp.HistoryActionCodeId = tr.HistoryActionCodeId
+          and _rp.IntraPNRSetNbr = tr.IntraPNRSetNbr
    )
 END;
 GO

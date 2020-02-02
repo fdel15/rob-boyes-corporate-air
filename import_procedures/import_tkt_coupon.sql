@@ -136,7 +136,9 @@ BEGIN
         BaggageAlwncText = tktc.BaggageAlwncText
           
   from	TktCoupon tc
-        inner join temp_TktCoupon tktc on tc.PrimaryDocNbr = tktc.PrimaryDocNbr and tc.VCRCreateDate = tktc.VCRCreateDate
+        inner join temp_TktCoupon tktc on tc.PrimaryDocNbr = tktc.PrimaryDocNbr
+          and tc.VCRCreateDate = tktc.VCRCreateDate
+          and tc.CouponSeqNbr = tktc.CouponSeqNbr
         
         
     PRINT char(13) + char(13)
@@ -148,7 +150,9 @@ BEGIN
     where  not exists (
       select 1
       from   TktCoupon _t1
-      where _t1.PrimaryDocNbr = t1.PrimaryDocNbr and _t1.VCRCreateDate = t1.VCRCreateDate
+      where _t1.PrimaryDocNbr = t1.PrimaryDocNbr
+        and _t1.VCRCreateDate = t1.VCRCreateDate
+        and _t1.CouponSeqNbr = t1.CouponSeqNbr
     )
 END;
 GO

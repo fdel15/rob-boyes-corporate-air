@@ -88,7 +88,12 @@ BEGIN
         IntraPNRSetNbr = tres.IntraPNRSetNbr
           
   from	ResSSR r 
-        inner join temp_ResSSR tres on r.PNRLocatorID = tres.PNRLocatorID and r.PNRCreateDate = tres.PNRCreateDate
+        inner join temp_ResSSR tres on r.PNRLocatorID = tres.PNRLocatorID 
+          and r.PNRCreateDate = tres.PNRCreateDate
+          and r.ResSSRSeqId = tres.ResSSRSeqId
+          and r.PNRPassengerSeqId = tres.PNRPassengerSeqId
+          and r.SSRIdTypeCode = tres.SSRIdTypeCode
+          and r.IntraPNRSetNbr = tres.IntraPNRSetNbr
         
         
     PRINT char(13) + char(13)
@@ -100,7 +105,12 @@ BEGIN
     where  not exists (
       select 1
       from   ResSSR _t1
-      where _t1.PNRLocatorID = t1.PNRLocatorID and _t1.PNRCreateDate = t1.PNRCreateDate
+      where _t1.PNRLocatorID = t1.PNRLocatorID 
+            and _t1.PNRCreateDate = t1.PNRCreateDate
+            and _t1.ResSSRSeqId = t1.ResSSRSeqId
+            and _t1.PNRPassengerSeqId = t1.PNRPassengerSeqId
+            and _t1.SSRIdTypeCode = t1.SSRIdTypeCode
+            and _t1.IntraPNRSetNbr = t1.IntraPNRSetNbr
     )
 END;
 GO
