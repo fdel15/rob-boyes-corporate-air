@@ -55,5 +55,5 @@ GO
 
 -- EXEC DailySabreImport '2020-12-06', 'E:\Sabre_FILES_tobedeleted\PROD\travelbatch\Extracted_DAT_Files'
 
-
+E:\\Company_Data\\Sabre\\Files\\travelbatch\\Archived\\Extracted_DAT_Files
 
