@@ -27,7 +27,7 @@ IF( 1 <> (SELECT ISNUMERIC(@import_date)) OR 8 <> (SELECT LEN(@import_date)))
   END
   
   if @import_file_path is null
-    set @import_file_path = 'E:\company_data\Sabre\Files\travelbatch'
+    set @import_file_path = 'I:\Sabre\Files\travelbatch\Extracted_DAT_Files'
 
   -- APPENDS DATA To existing table
 
