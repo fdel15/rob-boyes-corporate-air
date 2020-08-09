@@ -27,7 +27,7 @@ IF( 1 <> (SELECT ISNUMERIC(@import_date)) OR 8 <> (SELECT LEN(@import_date)))
   END
   
   if @import_file_path is null
-    set @import_file_path = 'I:\Sabre\Files\travelbatch\Extracted_DAT_Files'
+    set @import_file_path = '\\10.10.10.8\Sabre\Files\travelbatch\Extracted_DAT_Files'
 
   -- APPENDS DATA To existing table
 
@@ -54,6 +54,4 @@ END;
 GO
 
 -- EXEC DailySabreImport '2020-12-06', 'E:\Sabre_FILES_tobedeleted\PROD\travelbatch\Extracted_DAT_Files'
-
-E:\\Company_Data\\Sabre\\Files\\travelbatch\\Archived\\Extracted_DAT_Files
 
